@@ -1,4 +1,3 @@
 package advogados_popular.api_advogados_popular.DTOs.Advogados;
 
-public interface AdvogadoResponseDTO {
-}
+public record AdvogadoResponseDTO(Long id, String nome, String email, String oab) {}

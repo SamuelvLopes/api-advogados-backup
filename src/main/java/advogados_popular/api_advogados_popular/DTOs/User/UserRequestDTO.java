@@ -1,4 +1,3 @@
 package advogados_popular.api_advogados_popular.DTOs.User;
 
-public interface UserRequestDTO {
-}
+public record UserRequestDTO(String nome, String email, String senha) {}

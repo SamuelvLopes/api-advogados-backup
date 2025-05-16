@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 // Lance.java
 @Entity
+@Table(name = "lances")
 public class Lance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package sevices;
+package advogados_popular.api_advogados_popular.sevices;
 
 import advogados_popular.api_advogados_popular.DTOs.User.UserRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.User.UserResponseDTO;
