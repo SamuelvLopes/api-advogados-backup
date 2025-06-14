@@ -7,30 +7,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
-@Table(name = "advogados")
+@Table(name = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Advogado {
+public class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", unique = true, nullable = false)
-    private Account account;
+    @Column(unique = true, nullable = false)
+    private String email;
 
     @Column(nullable = false)
-    private String nome;
+    private String senha;
 
-    @Column(unique = true, nullable = false)
-    private String oab;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
-    @OneToMany(mappedBy = "advogado")
-    private List<Lance> lances;
+    @OneToOne(mappedBy = "account")
+    private User usuario;
+
+    @OneToOne(mappedBy = "account")
+    private Advogado advogado;
 }
 

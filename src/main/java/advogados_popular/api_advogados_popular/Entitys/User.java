@@ -1,5 +1,6 @@
 package advogados_popular.api_advogados_popular.Entitys;
 
+import advogados_popular.api_advogados_popular.DTOs.utils.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "account_id", unique = true, nullable = false)
+    private Account account;
+
+    @Column(nullable = false)
     private String nome;
-    private String email;
-    private String senha;
 
     @OneToMany(mappedBy = "usuario")
     private List<Causa> causas;
