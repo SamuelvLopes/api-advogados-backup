@@ -75,6 +75,30 @@ public class PropostaService {
                 .toList();
     }
 
+    public List<PropostaResponseDTO> listarDoAdvogado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (account.getRole() != Role.ADVOGADO) {
+            throw new RuntimeException("Acesso negado");
+        }
+
+        Advogado advogado = advogadoRepository.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
+
+        return propostaRepository.findByAdvogado(advogado).stream()
+                .map(p -> new PropostaResponseDTO(
+                        p.getId(),
+                        p.getCausa().getId(),
+                        advogado.getNome(),
+                        p.getMensagem(),
+                        p.getValorSugerido(),
+                        p.getStatus()
+                ))
+                .toList();
+    }
+
     public List<Causa> causasComPropostasDoAdvogado(Advogado advogado) {
         return propostaRepository.findByAdvogado(advogado).stream()
                 .map(Proposta::getCausa)

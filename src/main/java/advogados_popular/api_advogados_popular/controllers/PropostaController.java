@@ -28,4 +28,9 @@ public class PropostaController {
     public ResponseEntity<List<PropostaResponseDTO>> listarPorCausa(@RequestParam("causa_id") Long causaId) {
         return ResponseEntity.ok(service.listarPorCausa(causaId));
     }
+
+    @GetMapping("/minhas")
+    public ResponseEntity<List<PropostaResponseDTO>> listarDoAdvogado() {
+        return ResponseEntity.ok(service.listarDoAdvogado());
+    }
 }
