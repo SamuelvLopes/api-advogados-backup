@@ -68,10 +68,7 @@ public class CausaService {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
-        statusCausa filtro = null;
-        if (status != null) {
-            filtro = statusCausa.valueOf(status);
-        }
+        final statusCausa filtro = status != null ? statusCausa.valueOf(status) : null;
 
         if (account.getRole() == Role.USUARIO) {
             User usuario = usuarioRepository.findByAccount(account)
