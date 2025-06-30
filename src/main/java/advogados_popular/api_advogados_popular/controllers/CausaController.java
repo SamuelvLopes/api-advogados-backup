@@ -30,6 +30,11 @@ public class CausaController {
         List<CausaResponseDTO> causas = causaService.listarCausas();
         return ResponseEntity.ok(causas);
     }
+
+    @GetMapping("/historico")
+    public ResponseEntity<List<CausaResponseDTO>> historico(@RequestParam(value = "status", required = false) String status) {
+        return ResponseEntity.ok(causaService.historico(status));
+    }
 }
 
 
