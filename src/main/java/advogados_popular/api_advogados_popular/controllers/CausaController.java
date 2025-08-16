@@ -3,12 +3,13 @@ package advogados_popular.api_advogados_popular.controllers;
 import advogados_popular.api_advogados_popular.DTOs.Causa.CausaRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Causa.CausaResponseDTO;
 import advogados_popular.api_advogados_popular.sevices.CausaService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/causas")
@@ -21,19 +22,34 @@ public class CausaController {
     }
 
     @PostMapping
-    public ResponseEntity<CausaResponseDTO> cadastrar(@RequestBody CausaRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(causaService.cadastrar(dto));
+    public ResponseEntity<?> cadastrar(@RequestBody CausaRequestDTO dto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(causaService.cadastrar(dto));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Map.of("message", e.getReason()));
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<CausaResponseDTO>> listarCausas() {
-        List<CausaResponseDTO> causas = causaService.listarCausas();
-        return ResponseEntity.ok(causas);
+    public ResponseEntity<?> listarCausas() {
+        try {
+            List<CausaResponseDTO> causas = causaService.listarCausas();
+            return ResponseEntity.ok(causas);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Map.of("message", e.getReason()));
+        }
     }
 
     @GetMapping("/historico")
-    public ResponseEntity<List<CausaResponseDTO>> historico(@RequestParam(value = "status", required = false) String status) {
-        return ResponseEntity.ok(causaService.historico(status));
+    public ResponseEntity<?> historico(@RequestParam(value = "status", required = false) String status) {
+        try {
+            return ResponseEntity.ok(causaService.historico(status));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Map.of("message", e.getReason()));
+        }
     }
 }
 
