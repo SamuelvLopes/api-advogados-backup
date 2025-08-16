@@ -21,6 +21,7 @@ public class Causa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
+    @Column(columnDefinition = "LONGTEXT")
     private String descricao;
 
     @ManyToOne

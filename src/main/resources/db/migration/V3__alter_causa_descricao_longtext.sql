@@ -1,0 +1,1 @@
+ALTER TABLE causas MODIFY descricao LONGTEXT;
