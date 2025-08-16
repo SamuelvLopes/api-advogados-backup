@@ -3,14 +3,13 @@ package advogados_popular.api_advogados_popular.sevices;
 import advogados_popular.api_advogados_popular.DTOs.Login.LoginRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Login.LoginResponseDTO;
 import advogados_popular.api_advogados_popular.Entitys.Account;
-import advogados_popular.api_advogados_popular.Entitys.User;
 import advogados_popular.api_advogados_popular.Repositorys.AccountRepository;
-import advogados_popular.api_advogados_popular.Repositorys.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
@@ -27,7 +26,11 @@ public class AuthService {
 
     public LoginResponseDTO autenticar(LoginRequestDTO dto) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
-        authenticationManager.authenticate(authenticationToken);
+        try {
+            authenticationManager.authenticate(authenticationToken);
+        } catch (AuthenticationException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Email ou senha incorretos");
+        }
 
         Account account = accountRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
