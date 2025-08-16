@@ -14,8 +14,10 @@ import advogados_popular.api_advogados_popular.Entitys.User;
 import advogados_popular.api_advogados_popular.Repositorys.AccountRepository;
 import advogados_popular.api_advogados_popular.Repositorys.CausaRepository;
 import advogados_popular.api_advogados_popular.Repositorys.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -45,10 +47,10 @@ public class CausaService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
 
         if (account.getRole() != Role.ADVOGADO) {
-            throw new RuntimeException("Apenas advogados podem visualizar as causas.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas advogados podem visualizar as causas.");
         }
 
         return causaRepository.findAll().stream()
@@ -66,13 +68,13 @@ public class CausaService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
 
         final statusCausa filtro = status != null ? statusCausa.valueOf(status) : null;
 
         if (account.getRole() == Role.USUARIO) {
             User usuario = usuarioRepository.findByAccount(account)
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
             return causaRepository.findByUsuario(usuario).stream()
                     .filter(c -> filtro == null || c.getStatus() == filtro)
                     .map(c -> new CausaResponseDTO(
@@ -85,7 +87,7 @@ public class CausaService {
                     .toList();
         } else if (account.getRole() == Role.ADVOGADO) {
             Advogado advogado = advogadoRepository.findByAccount(account)
-                    .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Advogado não encontrado"));
             return propostaRepository.findByAdvogado(advogado).stream()
                     .map(Proposta::getCausa)
                     .distinct()
@@ -99,7 +101,7 @@ public class CausaService {
                     ))
                     .toList();
         } else {
-            throw new RuntimeException("Perfil inválido");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Perfil inválido");
         }
     }
 
@@ -107,14 +109,14 @@ public class CausaService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
 
         if (account.getRole() != Role.USUARIO) {
-            throw new RuntimeException("Apenas usuários podem cadastrar causas.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas usuários podem cadastrar causas.");
         }
 
         User usuario = usuarioRepository.findByAccount(account)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
 
         Causa causa = new Causa();
         causa.setTitulo(dto.titulo());
