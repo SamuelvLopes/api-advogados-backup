@@ -7,8 +7,10 @@ import advogados_popular.api_advogados_popular.Entitys.Account;
 import advogados_popular.api_advogados_popular.Entitys.Advogado;
 import advogados_popular.api_advogados_popular.Repositorys.AccountRepository;
 import advogados_popular.api_advogados_popular.Repositorys.AdvogadoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdvogadoService {
@@ -23,6 +25,10 @@ public class AdvogadoService {
     }
 
     public AdvogadoResponseDTO cadastrar(AdvogadoRequestDTO dto) {
+        if (accountRepository.findByEmail(dto.email()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+        }
+
         Account account = new Account();
         account.setEmail(dto.email());
         account.setSenha(passwordEncoder.encode(dto.senha()));
