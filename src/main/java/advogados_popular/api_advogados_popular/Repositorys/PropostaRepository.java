@@ -11,4 +11,6 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     boolean existsByAdvogadoAndCausa(Advogado advogado, Causa causa);
     List<Proposta> findByCausa(Causa causa);
     List<Proposta> findByAdvogado(Advogado advogado);
+
+    long countByCausa(Causa causa);
 }
