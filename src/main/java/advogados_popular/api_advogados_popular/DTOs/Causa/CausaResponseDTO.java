@@ -2,5 +2,16 @@ package advogados_popular.api_advogados_popular.DTOs.Causa;
 
 import advogados_popular.api_advogados_popular.DTOs.statusCausa;
 
-public record CausaResponseDTO(Long id, String titulo, String descricao, String usuarioNome, statusCausa status) {}
+/**
+ * Representa os dados retornados para uma {@link advogados_popular.api_advogados_popular.Entitys.Causa}.
+ * Inclui a quantidade de propostas associadas à causa.
+ */
+public record CausaResponseDTO(
+        Long id,
+        String titulo,
+        String descricao,
+        String usuarioNome,
+        statusCausa status,
+        long quantidadePropostas
+) {}
 

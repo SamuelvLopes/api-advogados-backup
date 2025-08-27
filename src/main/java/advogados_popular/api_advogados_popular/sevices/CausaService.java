@@ -57,7 +57,8 @@ public class CausaService {
                         causa.getTitulo(),
                         causa.getDescricao(),
                         causa.getUsuario().getNome(),
-                        causa.getStatus()
+                        causa.getStatus(),
+                        propostaRepository.countByCausa(causa)
                 ))
                 .toList();
     }
@@ -80,7 +81,8 @@ public class CausaService {
                             c.getTitulo(),
                             c.getDescricao(),
                             usuario.getNome(),
-                            c.getStatus()
+                            c.getStatus(),
+                            propostaRepository.countByCausa(c)
                     ))
                     .toList();
         } else if (account.getRole() == Role.ADVOGADO) {
@@ -95,7 +97,8 @@ public class CausaService {
                             c.getTitulo(),
                             c.getDescricao(),
                             c.getUsuario().getNome(),
-                            c.getStatus()
+                            c.getStatus(),
+                            propostaRepository.countByCausa(c)
                     ))
                     .toList();
         } else {
@@ -129,7 +132,8 @@ public class CausaService {
                 salvo.getTitulo(),
                 salvo.getDescricao(),
                 usuario.getNome(),
-                salvo.getStatus()
+                salvo.getStatus(),
+                0
         );
     }
 }
