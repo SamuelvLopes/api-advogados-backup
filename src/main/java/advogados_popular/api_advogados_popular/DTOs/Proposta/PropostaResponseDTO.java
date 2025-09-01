@@ -6,7 +6,10 @@ import java.math.BigDecimal;
 
 public record PropostaResponseDTO(Long id,
                                   Long causaId,
+                                  Long advogadoId,
                                   String advogadoNome,
+                                  Long usuarioId,
                                   String mensagem,
                                   BigDecimal valorSugerido,
                                   statusProposta status) {}
+

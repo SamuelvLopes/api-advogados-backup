@@ -56,6 +56,7 @@ public class CausaService {
                         causa.getId(),
                         causa.getTitulo(),
                         causa.getDescricao(),
+                        causa.getUsuario().getId(),
                         causa.getUsuario().getNome(),
                         causa.getStatus(),
                         propostaRepository.countByCausa(causa)
@@ -80,6 +81,7 @@ public class CausaService {
                             c.getId(),
                             c.getTitulo(),
                             c.getDescricao(),
+                            usuario.getId(),
                             usuario.getNome(),
                             c.getStatus(),
                             propostaRepository.countByCausa(c)
@@ -96,6 +98,7 @@ public class CausaService {
                             c.getId(),
                             c.getTitulo(),
                             c.getDescricao(),
+                            c.getUsuario().getId(),
                             c.getUsuario().getNome(),
                             c.getStatus(),
                             propostaRepository.countByCausa(c)
@@ -131,6 +134,7 @@ public class CausaService {
                 salvo.getId(),
                 salvo.getTitulo(),
                 salvo.getDescricao(),
+                usuario.getId(),
                 usuario.getNome(),
                 salvo.getStatus(),
                 0

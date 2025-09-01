@@ -54,8 +54,16 @@ public class PropostaService {
         proposta.setStatus(statusProposta.ENVIADA);
         Proposta salva = propostaRepository.save(proposta);
 
-        return new PropostaResponseDTO(salva.getId(), causa.getId(), advogado.getNome(),
-                salva.getMensagem(), salva.getValorSugerido(), salva.getStatus());
+        return new PropostaResponseDTO(
+                salva.getId(),
+                causa.getId(),
+                advogado.getId(),
+                advogado.getNome(),
+                causa.getUsuario().getId(),
+                salva.getMensagem(),
+                salva.getValorSugerido(),
+                salva.getStatus()
+        );
     }
 
     public List<PropostaResponseDTO> listarPorCausa(Long causaId) {
@@ -70,8 +78,15 @@ public class PropostaService {
         }
 
         return propostaRepository.findByCausa(causa).stream()
-                .map(p -> new PropostaResponseDTO(p.getId(), causa.getId(), p.getAdvogado().getNome(),
-                        p.getMensagem(), p.getValorSugerido(), p.getStatus()))
+                .map(p -> new PropostaResponseDTO(
+                        p.getId(),
+                        causa.getId(),
+                        p.getAdvogado().getId(),
+                        p.getAdvogado().getNome(),
+                        causa.getUsuario().getId(),
+                        p.getMensagem(),
+                        p.getValorSugerido(),
+                        p.getStatus()))
                 .toList();
     }
 
@@ -91,7 +106,9 @@ public class PropostaService {
                 .map(p -> new PropostaResponseDTO(
                         p.getId(),
                         p.getCausa().getId(),
+                        advogado.getId(),
                         advogado.getNome(),
+                        p.getCausa().getUsuario().getId(),
                         p.getMensagem(),
                         p.getValorSugerido(),
                         p.getStatus()
@@ -112,7 +129,9 @@ public class PropostaService {
         return new PropostaResponseDTO(
                 salva.getId(),
                 salva.getCausa().getId(),
+                salva.getAdvogado().getId(),
                 salva.getAdvogado().getNome(),
+                salva.getCausa().getUsuario().getId(),
                 salva.getMensagem(),
                 salva.getValorSugerido(),
                 salva.getStatus()

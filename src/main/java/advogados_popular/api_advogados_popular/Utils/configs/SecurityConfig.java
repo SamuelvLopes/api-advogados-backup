@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/usuarios/**", "/login", "/swagger-ui/**", "/v3/api-docs/**",
-                                "/advogados","/causas").permitAll()
+                                "/advogados","/causas", "/chat/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

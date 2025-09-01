@@ -10,6 +10,7 @@ public record CausaResponseDTO(
         Long id,
         String titulo,
         String descricao,
+        Long usuarioId,
         String usuarioNome,
         statusCausa status,
         long quantidadePropostas

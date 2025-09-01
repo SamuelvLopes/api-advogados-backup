@@ -37,7 +37,19 @@ public class AuthService {
 
         String token = jwtService.gerarToken(account);
         String role = account.getRole().name();
-        return new LoginResponseDTO(token,role);
+        Long id;
+        String nome;
+        if (account.getUsuario() != null) {
+            id = account.getUsuario().getId();
+            nome = account.getUsuario().getNome();
+        } else if (account.getAdvogado() != null) {
+            id = account.getAdvogado().getId();
+            nome = account.getAdvogado().getNome();
+        } else {
+            id = account.getId();
+            nome = account.getEmail();
+        }
+        return new LoginResponseDTO(id, nome, account.getEmail(), role, token);
 
     }
 }
