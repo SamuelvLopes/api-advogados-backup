@@ -32,18 +32,18 @@ public class PropostaService {
     public PropostaResponseDTO criar(PropostaRequestDTO dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta nǜo encontrada"));
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
         if (account.getRole() != Role.ADVOGADO) {
             throw new RuntimeException("Apenas advogados podem enviar propostas.");
         }
 
         Advogado advogado = advogadoRepository.findByAccount(account)
-                .orElseThrow(() -> new RuntimeException("Advogado nǜo encontrado"));
+                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
         Causa causa = causaRepository.findById(dto.causaId())
-                .orElseThrow(() -> new RuntimeException("Causa nǜo encontrada"));
+                .orElseThrow(() -> new RuntimeException("Causa não encontrada"));
 
         if (propostaRepository.existsByAdvogadoAndCausa(advogado, causa)) {
-            throw new RuntimeException("Proposta jǭ enviada para esta causa");
+            throw new RuntimeException("Proposta já enviada para esta causa");
         }
 
         Proposta proposta = new Proposta();
@@ -61,9 +61,9 @@ public class PropostaService {
     public List<PropostaResponseDTO> listarPorCausa(Long causaId) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta nǜo encontrada"));
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
         Causa causa = causaRepository.findById(causaId)
-                .orElseThrow(() -> new RuntimeException("Causa nǜo encontrada"));
+                .orElseThrow(() -> new RuntimeException("Causa não encontrada"));
 
         if (account.getRole() != Role.USUARIO || !causa.getUsuario().getAccount().equals(account)) {
             throw new RuntimeException("Acesso negado");
@@ -78,14 +78,14 @@ public class PropostaService {
     public List<PropostaResponseDTO> listarDoAdvogado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Conta nǜo encontrada"));
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
         if (account.getRole() != Role.ADVOGADO) {
             throw new RuntimeException("Acesso negado");
         }
 
         Advogado advogado = advogadoRepository.findByAccount(account)
-                .orElseThrow(() -> new RuntimeException("Advogado nǜo encontrado"));
+                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
 
         return propostaRepository.findByAdvogado(advogado).stream()
                 .map(p -> new PropostaResponseDTO(
@@ -103,19 +103,5 @@ public class PropostaService {
         return propostaRepository.findByAdvogado(advogado).stream()
                 .map(Proposta::getCausa)
                 .toList();
-    }
-    public PropostaResponseDTO aceitar(Long propostaId) {
-        Proposta proposta = propostaRepository.findById(propostaId)
-                .orElseThrow(() -> new RuntimeException("Proposta n�o encontrada"));
-        proposta.setStatus(statusProposta.ACEITA);
-        Proposta salva = propostaRepository.save(proposta);
-        return new PropostaResponseDTO(
-                salva.getId(),
-                salva.getCausa().getId(),
-                salva.getAdvogado().getNome(),
-                salva.getMensagem(),
-                salva.getValorSugerido(),
-                salva.getStatus()
-        );
     }
 }

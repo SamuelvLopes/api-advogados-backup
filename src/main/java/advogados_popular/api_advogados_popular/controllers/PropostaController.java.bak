@@ -33,9 +33,4 @@ public class PropostaController {
     public ResponseEntity<List<PropostaResponseDTO>> listarDoAdvogado() {
         return ResponseEntity.ok(service.listarDoAdvogado());
     }
-
-    @PostMapping("/{id}/aceitar")
-    public ResponseEntity<PropostaResponseDTO> aceitar(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(service.aceitar(id));
-    }
 }
