@@ -2,7 +2,9 @@ package advogados_popular.api_advogados_popular.sevices;
 
 import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaResponseDTO;
+import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaAceiteRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.statusProposta;
+import advogados_popular.api_advogados_popular.DTOs.statusCausa;
 import advogados_popular.api_advogados_popular.DTOs.utils.Role;
 import advogados_popular.api_advogados_popular.Entitys.*;
 import advogados_popular.api_advogados_popular.Repositorys.*;
@@ -62,7 +64,9 @@ public class PropostaService {
                 causa.getUsuario().getId(),
                 salva.getMensagem(),
                 salva.getValorSugerido(),
-                salva.getStatus()
+                salva.getStatus(),
+                salva.getFormaPagamento(),
+                salva.getComprovantePagamento()
         );
     }
 
@@ -86,7 +90,9 @@ public class PropostaService {
                         causa.getUsuario().getId(),
                         p.getMensagem(),
                         p.getValorSugerido(),
-                        p.getStatus()))
+                        p.getStatus(),
+                        p.getFormaPagamento(),
+                        p.getComprovantePagamento()))
                 .toList();
     }
 
@@ -111,7 +117,9 @@ public class PropostaService {
                         p.getCausa().getUsuario().getId(),
                         p.getMensagem(),
                         p.getValorSugerido(),
-                        p.getStatus()
+                        p.getStatus(),
+                        p.getFormaPagamento(),
+                        p.getComprovantePagamento()
                 ))
                 .toList();
     }
@@ -121,10 +129,18 @@ public class PropostaService {
                 .map(Proposta::getCausa)
                 .toList();
     }
-    public PropostaResponseDTO aceitar(Long propostaId) {
+    public PropostaResponseDTO aceitar(Long propostaId, PropostaAceiteRequestDTO dto) {
         Proposta proposta = propostaRepository.findById(propostaId)
                 .orElseThrow(() -> new RuntimeException("Proposta n�o encontrada"));
         proposta.setStatus(statusProposta.ACEITA);
+        if (dto != null) {
+            proposta.setFormaPagamento(dto.formaPagamento());
+            proposta.setComprovantePagamento(dto.comprovantePagamento());
+        }
+        Causa causa = proposta.getCausa();
+        causa.setAdvogadoAtribuido(proposta.getAdvogado());
+        causa.setStatus(statusCausa.NEGOCIANDO);
+        causaRepository.save(causa);
         Proposta salva = propostaRepository.save(proposta);
         return new PropostaResponseDTO(
                 salva.getId(),
@@ -134,7 +150,9 @@ public class PropostaService {
                 salva.getCausa().getUsuario().getId(),
                 salva.getMensagem(),
                 salva.getValorSugerido(),
-                salva.getStatus()
+                salva.getStatus(),
+                salva.getFormaPagamento(),
+                salva.getComprovantePagamento()
         );
     }
 }

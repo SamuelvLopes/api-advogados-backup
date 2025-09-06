@@ -59,6 +59,7 @@ public class CausaService {
                         causa.getUsuario().getId(),
                         causa.getUsuario().getNome(),
                         causa.getStatus(),
+                        causa.getSucesso(),
                         propostaRepository.countByCausa(causa)
                 ))
                 .toList();
@@ -84,6 +85,7 @@ public class CausaService {
                             usuario.getId(),
                             usuario.getNome(),
                             c.getStatus(),
+                            c.getSucesso(),
                             propostaRepository.countByCausa(c)
                     ))
                     .toList();
@@ -101,6 +103,7 @@ public class CausaService {
                             c.getUsuario().getId(),
                             c.getUsuario().getNome(),
                             c.getStatus(),
+                            c.getSucesso(),
                             propostaRepository.countByCausa(c)
                     ))
                     .toList();
@@ -137,7 +140,44 @@ public class CausaService {
                 usuario.getId(),
                 usuario.getNome(),
                 salvo.getStatus(),
+                salvo.getSucesso(),
                 0
+        );
+    }
+
+    public CausaResponseDTO encerrar(Long causaId, boolean sucesso) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (account.getRole() != Role.ADVOGADO) {
+            throw new RuntimeException("Apenas advogados podem encerrar causas.");
+        }
+
+        Advogado advogado = advogadoRepository.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
+
+        Causa causa = causaRepository.findById(causaId)
+                .orElseThrow(() -> new RuntimeException("Causa não encontrada"));
+
+        if (causa.getAdvogadoAtribuido() == null || !causa.getAdvogadoAtribuido().getId().equals(advogado.getId())) {
+            throw new RuntimeException("Acesso negado");
+        }
+
+        causa.setStatus(statusCausa.FECHADA);
+        causa.setSucesso(sucesso);
+        Causa salva = causaRepository.save(causa);
+
+        return new CausaResponseDTO(
+                salva.getId(),
+                salva.getTitulo(),
+                salva.getDescricao(),
+                salva.getUsuario().getId(),
+                salva.getUsuario().getNome(),
+                salva.getStatus(),
+                salva.getSucesso(),
+                propostaRepository.countByCausa(salva)
         );
     }
 }

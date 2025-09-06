@@ -43,9 +43,18 @@ public class AdvogadoService {
         advogado.setAccount(savedAccount);
         advogado.setNome(dto.nome());
         advogado.setOab(dto.oab());
+        advogado.setWhatsapp(dto.whatsapp());
+        advogado.setAreasAtuacao(dto.areasAtuacao());
         Advogado savedAdvogado = advogadoRepository.save(advogado);
 
-        return new AdvogadoResponseDTO(savedAdvogado.getId(), savedAdvogado.getNome(), savedAdvogado.getOab(), savedAccount.getEmail());
+        return new AdvogadoResponseDTO(
+                savedAdvogado.getId(),
+                savedAdvogado.getNome(),
+                savedAccount.getEmail(),
+                savedAdvogado.getOab(),
+                savedAdvogado.getWhatsapp(),
+                savedAdvogado.getAreasAtuacao()
+        );
     }
 }
 

@@ -1,6 +1,7 @@
 package advogados_popular.api_advogados_popular.Entitys;
 
 import advogados_popular.api_advogados_popular.DTOs.statusProposta;
+import advogados_popular.api_advogados_popular.DTOs.utils.FormaPagamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,6 +39,12 @@ public class Proposta {
 
     @Enumerated(EnumType.STRING)
     private statusProposta status;
+
+    @Enumerated(EnumType.STRING)
+    private FormaPagamento formaPagamento;
+
+    @Column(name = "comprovante_pagamento")
+    private String comprovantePagamento;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

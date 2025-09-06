@@ -13,6 +13,7 @@ public record CausaResponseDTO(
         Long usuarioId,
         String usuarioNome,
         statusCausa status,
+        Boolean sucesso,
         long quantidadePropostas
 ) {}
 

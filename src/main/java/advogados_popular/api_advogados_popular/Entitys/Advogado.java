@@ -30,6 +30,12 @@ public class Advogado {
     @Column(unique = true, nullable = false)
     private String oab;
 
+    @Column(nullable = false)
+    private String whatsapp;
+
+    @Column(name = "areas_atuacao")
+    private String areasAtuacao;
+
     @OneToMany(mappedBy = "advogado")
     private List<Lance> lances;
 }

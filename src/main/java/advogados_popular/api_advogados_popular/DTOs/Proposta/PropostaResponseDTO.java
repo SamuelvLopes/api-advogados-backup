@@ -1,6 +1,7 @@
 package advogados_popular.api_advogados_popular.DTOs.Proposta;
 
 import advogados_popular.api_advogados_popular.DTOs.statusProposta;
+import advogados_popular.api_advogados_popular.DTOs.utils.FormaPagamento;
 
 import java.math.BigDecimal;
 
@@ -11,5 +12,7 @@ public record PropostaResponseDTO(Long id,
                                   Long usuarioId,
                                   String mensagem,
                                   BigDecimal valorSugerido,
-                                  statusProposta status) {}
+                                  statusProposta status,
+                                  FormaPagamento formaPagamento,
+                                  String comprovantePagamento) {}
 
