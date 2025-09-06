@@ -2,6 +2,7 @@ package advogados_popular.api_advogados_popular.controllers;
 
 import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaResponseDTO;
+import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaAceiteRequestDTO;
 import advogados_popular.api_advogados_popular.sevices.PropostaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,8 @@ public class PropostaController {
     }
 
     @PostMapping("/{id}/aceitar")
-    public ResponseEntity<PropostaResponseDTO> aceitar(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(service.aceitar(id));
+    public ResponseEntity<PropostaResponseDTO> aceitar(@PathVariable("id") Long id,
+                                                       @RequestBody(required = false) PropostaAceiteRequestDTO dto) {
+        return ResponseEntity.ok(service.aceitar(id, dto));
     }
 }
