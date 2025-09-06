@@ -35,6 +35,12 @@ public class CausaController {
     public ResponseEntity<List<CausaResponseDTO>> historico(@RequestParam(value = "status", required = false) String status) {
         return ResponseEntity.ok(causaService.historico(status));
     }
+
+    @PatchMapping("/{id}/encerrar")
+    public ResponseEntity<CausaResponseDTO> encerrar(@PathVariable("id") Long id,
+                                                     @RequestParam("sucesso") boolean sucesso) {
+        return ResponseEntity.ok(causaService.encerrar(id, sucesso));
+    }
 }
 
 

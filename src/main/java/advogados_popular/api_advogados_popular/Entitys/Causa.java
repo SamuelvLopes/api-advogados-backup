@@ -35,6 +35,8 @@ public class Causa {
 
     private statusCausa status;
 
+    private Boolean sucesso;
+
     @OneToMany(mappedBy = "causa")
     private List<Lance> lances;
 }

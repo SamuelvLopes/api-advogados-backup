@@ -4,6 +4,7 @@ import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaResponseDTO;
 import advogados_popular.api_advogados_popular.DTOs.Proposta.PropostaAceiteRequestDTO;
 import advogados_popular.api_advogados_popular.DTOs.statusProposta;
+import advogados_popular.api_advogados_popular.DTOs.statusCausa;
 import advogados_popular.api_advogados_popular.DTOs.utils.Role;
 import advogados_popular.api_advogados_popular.Entitys.*;
 import advogados_popular.api_advogados_popular.Repositorys.*;
@@ -136,6 +137,10 @@ public class PropostaService {
             proposta.setFormaPagamento(dto.formaPagamento());
             proposta.setComprovantePagamento(dto.comprovantePagamento());
         }
+        Causa causa = proposta.getCausa();
+        causa.setAdvogadoAtribuido(proposta.getAdvogado());
+        causa.setStatus(statusCausa.NEGOCIANDO);
+        causaRepository.save(causa);
         Proposta salva = propostaRepository.save(proposta);
         return new PropostaResponseDTO(
                 salva.getId(),
