@@ -35,6 +35,20 @@ public class CausaController {
     public ResponseEntity<List<CausaResponseDTO>> historico(@RequestParam(value = "status", required = false) String status) {
         return ResponseEntity.ok(causaService.historico(status));
     }
+
+    @PostMapping("/{id}/finalizar")
+    public ResponseEntity<Void> finalizar(@PathVariable("id") Long causaId) {
+        causaService.finalizarCausa(causaId);
+        return ResponseEntity.noContent().build();
+    }
+
+    public record AvaliacaoRequest(Integer estrelas) {}
+
+    @PostMapping("/{id}/avaliacao")
+    public ResponseEntity<Void> avaliar(@PathVariable("id") Long causaId, @RequestBody AvaliacaoRequest req) {
+        causaService.avaliarCausa(causaId, req.estrelas());
+        return ResponseEntity.noContent().build();
+    }
 }
 
 

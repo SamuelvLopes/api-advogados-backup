@@ -125,6 +125,15 @@ public class PropostaService {
         Proposta proposta = propostaRepository.findById(propostaId)
                 .orElseThrow(() -> new RuntimeException("Proposta n�o encontrada"));
         proposta.setStatus(statusProposta.ACEITA);
+        // Atualiza causa para NEGOCIANDO e vincula o advogado
+        Causa causa = proposta.getCausa();
+        causa.setStatus(advogados_popular.api_advogados_popular.DTOs.statusCausa.NEGOCIANDO);
+        causa.setAdvogadoAtribuido(proposta.getAdvogado());
+        causaRepository.save(causa);
+        // Opcional: recusar outras propostas
+        propostaRepository.findByCausa(causa).stream()
+                .filter(p -> !p.getId().equals(proposta.getId()))
+                .forEach(p -> { p.setStatus(statusProposta.RECUSADA); propostaRepository.save(p); });
         Proposta salva = propostaRepository.save(proposta);
         return new PropostaResponseDTO(
                 salva.getId(),

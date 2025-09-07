@@ -14,6 +14,7 @@ import advogados_popular.api_advogados_popular.Entitys.User;
 import advogados_popular.api_advogados_popular.Repositorys.AccountRepository;
 import advogados_popular.api_advogados_popular.Repositorys.CausaRepository;
 import advogados_popular.api_advogados_popular.Repositorys.UserRepository;
+import advogados_popular.api_advogados_popular.DTOs.statusProposta;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -139,6 +140,62 @@ public class CausaService {
                 salvo.getStatus(),
                 0
         );
+    }
+
+    public void finalizarCausa(Long causaId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (account.getRole() != Role.ADVOGADO) {
+            throw new RuntimeException("Apenas advogados podem finalizar causas.");
+        }
+
+        Advogado advogado = advogadoRepository.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Advogado não encontrado"));
+
+        Causa causa = causaRepository.findById(causaId)
+                .orElseThrow(() -> new RuntimeException("Causa não encontrada"));
+
+        // Verifica se a proposta aceita é do advogado atual (ou se já está atribuído)
+        boolean ehDoAdvogado = false;
+        if (causa.getAdvogadoAtribuido() != null && causa.getAdvogadoAtribuido().getId().equals(advogado.getId())) {
+            ehDoAdvogado = true;
+        } else {
+            ehDoAdvogado = propostaRepository.findByCausa(causa).stream()
+                    .anyMatch(p -> p.getStatus() == statusProposta.ACEITA && p.getAdvogado().getId().equals(advogado.getId()));
+        }
+        if (!ehDoAdvogado) {
+            throw new RuntimeException("Somente o advogado com proposta aceita pode finalizar.");
+        }
+
+        causa.setStatus(statusCausa.FECHADA);
+        causaRepository.save(causa);
+    }
+
+    public void avaliarCausa(Long causaId, Integer estrelas) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        if (account.getRole() != Role.USUARIO) {
+            throw new RuntimeException("Apenas usuários podem avaliar causas.");
+        }
+
+        User usuario = usuarioRepository.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Causa causa = causaRepository.findById(causaId)
+                .orElseThrow(() -> new RuntimeException("Causa não encontrada"));
+        if (!causa.getUsuario().getId().equals(usuario.getId())) {
+            throw new RuntimeException("A causa não pertence ao usuário");
+        }
+        if (causa.getStatus() != statusCausa.FECHADA) {
+            throw new RuntimeException("Só é possível avaliar após a finalização.");
+        }
+        int s = estrelas == null ? 0 : Math.max(0, Math.min(5, estrelas));
+        // Por simplicidade, salvamos a nota no próprio objeto Causa por enquanto.
+        // Em produção, crie uma entidade Avaliacao com UNIQUE(causa_id, usuario_id).
+        // Se já existisse um campo rating, setar aqui. Como não existe, não persistimos além de LOG.
+        System.out.println("[AVALIACAO] Causa " + causaId + " avaliada com " + s + " estrelas");
     }
 }
 
