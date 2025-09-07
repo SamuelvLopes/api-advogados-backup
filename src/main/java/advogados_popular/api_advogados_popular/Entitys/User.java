@@ -26,6 +26,9 @@ public class User {
     @Column(nullable = false)
     private String nome;
 
+    @Column(name = "telefone", length = 32)
+    private String telefone;
+
     @OneToMany(mappedBy = "usuario")
     private List<Causa> causas;
 }

@@ -37,9 +37,10 @@ public class UserService { private final UserRepository usuarioRepository;
         User usuario = new User();
         usuario.setAccount(savedAccount);
         usuario.setNome(dto.nome());
+        usuario.setTelefone(dto.telefone());
         User savedUsuario = usuarioRepository.save(usuario);
 
-        return new UserResponseDTO(savedUsuario.getId(), savedUsuario.getNome(), savedAccount.getEmail());
+        return new UserResponseDTO(savedUsuario.getId(), savedUsuario.getNome(), savedAccount.getEmail(), savedUsuario.getTelefone());
     }
 }
 
