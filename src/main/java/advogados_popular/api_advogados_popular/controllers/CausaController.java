@@ -42,11 +42,11 @@ public class CausaController {
         return ResponseEntity.noContent().build();
     }
 
-    public record AvaliacaoRequest(Integer estrelas) {}
+    public record AvaliacaoRequest(Integer estrelas, String comentario) {}
 
     @PostMapping("/{id}/avaliacao")
     public ResponseEntity<Void> avaliar(@PathVariable("id") Long causaId, @RequestBody AvaliacaoRequest req) {
-        causaService.avaliarCausa(causaId, req.estrelas());
+        causaService.avaliarCausa(causaId, req.estrelas(), req.comentario());
         return ResponseEntity.noContent().build();
     }
 }

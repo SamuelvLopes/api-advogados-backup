@@ -15,6 +15,8 @@ import advogados_popular.api_advogados_popular.Repositorys.AccountRepository;
 import advogados_popular.api_advogados_popular.Repositorys.CausaRepository;
 import advogados_popular.api_advogados_popular.Repositorys.UserRepository;
 import advogados_popular.api_advogados_popular.DTOs.statusProposta;
+import advogados_popular.api_advogados_popular.Entitys.Avaliacao;
+import advogados_popular.api_advogados_popular.Repositorys.AvaliacaoRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +31,20 @@ public class CausaService {
     private final CausaRepository causaRepository;
     private final UserRepository usuarioRepository;
     private final AccountRepository accountRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     public CausaService(CausaRepository causaRepository,
                         UserRepository usuarioRepository,
                         AccountRepository accountRepository,
                         AdvogadoRepository advogadoRepository,
-                        PropostaRepository propostaRepository) {
+                        PropostaRepository propostaRepository,
+                        AvaliacaoRepository avaliacaoRepository) {
         this.causaRepository = causaRepository;
         this.usuarioRepository = usuarioRepository;
         this.accountRepository = accountRepository;
         this.advogadoRepository = advogadoRepository;
         this.propostaRepository = propostaRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
     }
 
     public List<CausaResponseDTO> listarCausas() {
@@ -60,7 +65,9 @@ public class CausaService {
                         causa.getUsuario().getId(),
                         causa.getUsuario().getNome(),
                         causa.getStatus(),
-                        propostaRepository.countByCausa(causa)
+                        propostaRepository.countByCausa(causa),
+                        null,
+                        null
                 ))
                 .toList();
     }
@@ -85,7 +92,9 @@ public class CausaService {
                             usuario.getId(),
                             usuario.getNome(),
                             c.getStatus(),
-                            propostaRepository.countByCausa(c)
+                            propostaRepository.countByCausa(c),
+                            avaliacaoRepository.findByCausaAndUsuario(c, usuario).map(Avaliacao::getEstrelas).orElse(null),
+                            avaliacaoRepository.findByCausaAndUsuario(c, usuario).map(Avaliacao::getComentario).orElse(null)
                     ))
                     .toList();
         } else if (account.getRole() == Role.ADVOGADO) {
@@ -102,7 +111,9 @@ public class CausaService {
                             c.getUsuario().getId(),
                             c.getUsuario().getNome(),
                             c.getStatus(),
-                            propostaRepository.countByCausa(c)
+                            propostaRepository.countByCausa(c),
+                            avaliacaoRepository.findByCausaAndUsuario(c, c.getUsuario()).map(Avaliacao::getEstrelas).orElse(null),
+                            avaliacaoRepository.findByCausaAndUsuario(c, c.getUsuario()).map(Avaliacao::getComentario).orElse(null)
                     ))
                     .toList();
         } else {
@@ -138,7 +149,9 @@ public class CausaService {
                 usuario.getId(),
                 usuario.getNome(),
                 salvo.getStatus(),
-                0
+                0,
+                null,
+                null
         );
     }
 
@@ -173,7 +186,7 @@ public class CausaService {
         causaRepository.save(causa);
     }
 
-    public void avaliarCausa(Long causaId, Integer estrelas) {
+    public void avaliarCausa(Long causaId, Integer estrelas, String comentario) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
@@ -192,10 +205,16 @@ public class CausaService {
             throw new RuntimeException("Só é possível avaliar após a finalização.");
         }
         int s = estrelas == null ? 0 : Math.max(0, Math.min(5, estrelas));
-        // Por simplicidade, salvamos a nota no próprio objeto Causa por enquanto.
-        // Em produção, crie uma entidade Avaliacao com UNIQUE(causa_id, usuario_id).
-        // Se já existisse um campo rating, setar aqui. Como não existe, não persistimos além de LOG.
-        System.out.println("[AVALIACAO] Causa " + causaId + " avaliada com " + s + " estrelas");
+        Avaliacao a = avaliacaoRepository.findByCausaAndUsuario(causa, usuario)
+                .orElseGet(() -> {
+                    Avaliacao n = new Avaliacao();
+                    n.setCausa(causa);
+                    n.setUsuario(usuario);
+                    return n;
+                });
+        a.setEstrelas(s);
+        a.setComentario(comentario);
+        avaliacaoRepository.save(a);
     }
 }
 
