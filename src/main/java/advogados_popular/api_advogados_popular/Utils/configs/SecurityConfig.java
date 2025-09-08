@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,8 +49,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
+                        // TEMP: Abrir todos os GETs para depuração (evita 403 em acesso direto pelo navegador)
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers("/usuarios/**", "/login", "/swagger-ui/**", "/v3/api-docs/**",
-                                "/advogados","/causas", "/chat/**").permitAll()
+                                "/advogados","/causas/**", "/chat/**", "/perfis/**", "/debug/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

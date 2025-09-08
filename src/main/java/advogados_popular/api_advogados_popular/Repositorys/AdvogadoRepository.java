@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface AdvogadoRepository extends JpaRepository<Advogado, Long> {
     Optional<Advogado> findByAccount(Account account);
     Optional<Advogado> findByOab(String oab);
+    Optional<Advogado> findByAccount_Id(Long accountId);
 }
