@@ -1,5 +1,6 @@
 package advogados_popular.api_advogados_popular.Repositorys;
 
+import advogados_popular.api_advogados_popular.DTOs.statusProposta;
 import advogados_popular.api_advogados_popular.Entitys.Advogado;
 import advogados_popular.api_advogados_popular.Entitys.Causa;
 import advogados_popular.api_advogados_popular.Entitys.Proposta;
@@ -13,4 +14,6 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     List<Proposta> findByAdvogado(Advogado advogado);
 
     long countByCausa(Causa causa);
+
+    long countByAdvogadoAndStatus(Advogado advogado, statusProposta status);
 }
