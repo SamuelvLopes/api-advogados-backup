@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Comparator;
 
 
 @Service
@@ -85,6 +86,8 @@ public class CausaService {
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
             return causaRepository.findByUsuario(usuario).stream()
                     .filter(c -> filtro == null || c.getStatus() == filtro)
+                    .sorted(Comparator.comparing(Causa::getId).reversed())
+                    .limit(15)
                     .map(c -> new CausaResponseDTO(
                             c.getId(),
                             c.getTitulo(),
@@ -104,6 +107,8 @@ public class CausaService {
                     .map(Proposta::getCausa)
                     .distinct()
                     .filter(c -> filtro == null || c.getStatus() == filtro)
+                    .sorted(Comparator.comparing(Causa::getId).reversed())
+                    .limit(15)
                     .map(c -> new CausaResponseDTO(
                             c.getId(),
                             c.getTitulo(),
